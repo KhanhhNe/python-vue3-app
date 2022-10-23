@@ -10,10 +10,9 @@ from app import app
 
 def get_files_recursive(folder: str):
     for root, dirs, files in os.walk(folder):
-        for file in files:
-            relative_path = os.path.relpath(os.path.join(root, file), os.getcwd()).replace('\\', '/')
-            folder = os.path.dirname(relative_path)
-            yield f"--add-binary={folder}/*.*{os.pathsep}{folder}"
+        relative_path = os.path.relpath(root, os.getcwd()).replace('\\', '/')
+        folder = os.path.dirname(relative_path)
+        yield f"--add-binary={folder}/*.*{os.pathsep}{folder}"
 
 
 def compile_to_exe():
