@@ -11,7 +11,11 @@ from fastapi.staticfiles import StaticFiles
 
 from app import models, views
 
-app = FastAPI(openapi_url="/api/openapi.json", docs_url="/api/docs", redoc_url="/api/redoc")
+app = FastAPI(
+    title="Python Vue3 App",
+    version="0.0.1",
+    openapi_url="/api/openapi.json", docs_url="/api/docs", redoc_url="/api/redoc"
+)
 os.makedirs('data', exist_ok=True)
 models.init_db(app)
 
