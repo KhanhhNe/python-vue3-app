@@ -9,6 +9,7 @@ uvicorn = {extras = ["standard"], version = "*"}
 ormar = {extras = ["sqlite"], version = "*"}
 databases = "*"
 sqlalchemy = "*"
+pyinstaller = "*"
 
 [dev-packages]
 
