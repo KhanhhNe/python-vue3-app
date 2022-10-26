@@ -7,20 +7,17 @@ import uvicorn
 
 if __name__ == '__main__':
     freeze_support()
-
     process = None
 
     if os.environ.get('DEBUG'):
-        # Don't use shell=True on linux
-        process = subprocess.Popen(['npm', 'run', 'dev'], shell=os.name == 'nt', cwd='web_src')
+        process = subprocess.Popen(['npm', 'run', 'dev'], shell=True, cwd='web_src')
         args = {
             'reload': True,
             'port': 8080
         }
     else:
         if not getattr(sys, 'frozen', False):
-            # Don't use shell=True on linux
-            subprocess.Popen(['npm', 'run', 'build'], shell=os.name == 'nt', cwd='web_src').wait()
+            subprocess.Popen(['npm', 'run', 'build'], shell=True, cwd='web_src').wait()
 
         args = {
             'workers': os.cpu_count(),

@@ -8,11 +8,16 @@ import PyInstaller.__main__
 from app import app
 
 
-def get_files_recursive(folder: str):
-    for root, dirs, files in os.walk(folder):
-        relative_path = os.path.relpath(root, os.getcwd()).replace('\\', '/')
-        folder = os.path.dirname(relative_path)
-        yield f"--add-binary={folder}/*.*{os.pathsep}{folder}"
+def get_files_recursive(folder_name: str):
+    for root, dirs, files in os.walk(folder_name):
+        for dirname in dirs:
+            folder = os.path.relpath(os.path.join(root, dirname), os.getcwd()).replace('\\', '/')
+            if not folder:
+                continue
+            yield f"--add-binary={folder}/*.*{os.pathsep}{folder}"
+
+    folder_name = folder_name.replace('\\', '/')
+    yield f"--add-data={folder_name}/*.*{os.pathsep}{folder_name}"
 
 
 def compile_to_exe():
@@ -24,7 +29,7 @@ def compile_to_exe():
     shutil.rmtree(dist_path, ignore_errors=True)
     shutil.rmtree(work_path, ignore_errors=True)
 
-    if return_code := subprocess.run('npm run build', cwd='web_src', shell=os.name == 'nt').returncode:
+    if return_code := subprocess.run('npm run build', cwd='web_src', shell=True).returncode:
         print(f"NPM build failed! (return code: {return_code})")
         exit(return_code)
 
