@@ -1,7 +1,9 @@
 import os
-import sys
 import traceback
+from functools import cache
+from typing import Any, Dict
 
+import docstring_parser
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.requests import Request
@@ -10,7 +12,41 @@ from fastapi.staticfiles import StaticFiles
 
 from app import models, views
 
-app = FastAPI(
+
+class CustomFastAPI(FastAPI):
+    @cache
+    def openapi(self) -> Dict[str, Any]:
+        schema = super().openapi().copy()
+
+        for path, methods in schema['paths'].items():
+            for method, data in methods.items():
+                description = data.get('description', '')
+                parsed = docstring_parser.parse(description)
+
+                description = parsed.short_description
+
+                # Add Markdown-formatted information (params, raises, returns) to the description
+                if parsed.params:
+                    params = [
+                        f"- {param.arg_name}: {param.description}" for param in parsed.params
+                    ]
+                    description += f"\n\n### Parameters\n" + '\n'.join(params)
+
+                if parsed.raises:
+                    raises = [
+                        f"- {raise_.type_name}: {raise_.description}" for raise_ in parsed.raises
+                    ]
+                    description += f"\n\n### Raises\n" + '\n'.join(raises)
+
+                if parsed.returns:
+                    description += f"\n\n### Returns\n" + f"- {parsed.returns.description}"
+
+                data['description'] = description
+
+        return schema
+
+
+app = CustomFastAPI(
     title="Python Vue3 App",
     version="0.0.1",
     openapi_url="/api/openapi.json", docs_url="/api/docs", redoc_url="/api/redoc"
