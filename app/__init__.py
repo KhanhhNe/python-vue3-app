@@ -39,11 +39,12 @@ views.include_routers(app)
 
 
 @app.middleware('http')
-async def check_admin_ip(request: Request, call_next):
+async def return_exception_message(request: Request, call_next):
     # noinspection PyBroadException
     try:
         return await call_next(request)
     except Exception:
+        traceback.print_exc()
         return PlainTextResponse(traceback.format_exc(), status_code=500)
 
 
@@ -57,9 +58,4 @@ app.add_middleware(
 
 if not os.environ.get('DEBUG'):
     public_dir = 'public'
-    if getattr(sys, 'frozen', False):
-        # noinspection PyProtectedMember,PyUnresolvedReferences
-        public_dir = os.path.join(sys._MEIPASS, public_dir)
-
-    app.mount('/', StaticFiles(directory=public_dir, html=True), name='public')
-    # app.mount('/assets', StaticFiles(directory=public_dir), name='assets')
+    app.mount('/', StaticFiles(directory=public_dir, html=True, check_dir=False), name='public')

@@ -10,6 +10,7 @@ ormar = {extras = ["sqlite"], version = "*"}
 databases = "*"
 sqlalchemy = "*"
 pyinstaller = "*"
+python-multipart = "*"
 
 [dev-packages]
 

@@ -39,6 +39,9 @@ def compile_to_exe():
 
         '--hidden-import=app',
 
+        # Upload files
+        '--hidden-import=multipart',
+
         # Websockets
         '--hidden-import=websockets.legacy',
         '--hidden-import=websockets.legacy.server',
